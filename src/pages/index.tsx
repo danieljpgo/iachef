@@ -8,13 +8,15 @@ export default function Home() {
   const [recipe, setRecipe] = React.useState("");
 
   const prompt =
-    "Receita para duas pessoas, usando aveia, frango, tomate, cebola e cenoura";
+    "Receita usando aveia, frango, tomate, cebola, arroz e cenoura. Listar os Ingredientes e o Modo de Preparo, com menos de 1000 caracteres";
 
-  async function handleSubmit() {
+  async function handleSubmit(e: any) {
+    e.preventDefault();
+
     console.log("entrou");
     setRecipe("");
 
-    const response = await fetch("/api/generate", {
+    const response = await fetch("/api/generate-stream", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,10 +30,14 @@ export default function Home() {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
+    // const data = await response.json();
+    // setRecipe(data.choices[0].text);
 
     // This data is a ReadableStream
     const data = response.body;
-    if (!data) return;
+    if (!data) {
+      return;
+    }
 
     const reader = data.getReader();
     const decoder = new TextDecoder();
@@ -39,10 +45,11 @@ export default function Home() {
 
     while (!done) {
       const { value, done: doneReading } = await reader.read();
-      // console.log(doneReading, value);
       done = doneReading;
       const chunkValue = decoder.decode(value);
-      // console.log(chunkValue);
+
+      console.log(chunkValue);
+
       setRecipe((prev) => prev + chunkValue);
     }
   }
@@ -56,19 +63,23 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <button onClick={handleSubmit}>gerar</button>
+        <button type="button" onClick={handleSubmit}>
+          gerar
+        </button>
 
-        <p>{JSON.stringify(recipe, null, 2)}</p>
-      </main>
-    </>
-  );
-}
-
-/* <div>
-          {recipe
+        <pre style={{ whiteSpace: "pre-wrap" }}>
+          <p>{recipe}</p>
+        </pre>
+        {/* <p>{JSON.stringify(recipe, null, 2)}</p> */}
+        <div>
+          {/* {recipe
             .substring(recipe.indexOf("1") + 3)
             .split("2.")
             .map((step) => (
               <p key={step}>{step}</p>
-            ))}
-        </div> */
+            ))} */}
+        </div>
+      </main>
+    </>
+  );
+}

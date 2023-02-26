@@ -1,19 +1,19 @@
-import { OpenAIStream, OpenAIStreamPayload } from "~/lib/openia";
+import { NextApiRequest, NextApiResponse } from "next";
+import { OpenAI, OpenAIStream, OpenAIStreamPayload } from "~/lib/openia";
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("Missing env var from OpenAI");
 }
 
-export const config = {
-  runtime: "edge",
-};
-
-const handler = async (req: Request): Promise<Response> => {
-  const { prompt } = (await req.json()) as {
-    prompt?: string;
-  };
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { prompt } = req.body;
   if (!prompt) {
+    return new Response("No prompt in the request", { status: 400 });
+  }
+  if (typeof prompt !== "string") {
     return new Response("No prompt in the request", { status: 400 });
   }
 
@@ -24,13 +24,11 @@ const handler = async (req: Request): Promise<Response> => {
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
-    max_tokens: 200,
-    stream: true,
+    max_tokens: 2046,
+    stream: false,
     n: 1,
   };
 
-  const stream = await OpenAIStream(payload);
-  return new Response(stream);
-};
-
-export default handler;
+  const response = await OpenAI(payload);
+  res.status(200).json(response);
+}
