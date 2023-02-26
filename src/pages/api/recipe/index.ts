@@ -8,15 +8,13 @@ export default async function handler(
   try {
     const { method, body, query } = req;
 
-    console.log({ body, query });
-
     if (method === "GET") {
       const recipes = await prisma.recipe.findFirst({
         where: {
           ingredients: {
             every: {
               id: {
-                in: query?.ingredients?.split(","),
+                in: query?.ingredients?.toString()?.split(","),
                 // in: ["clelpmimw0006q33jp0jv2gwn", "clelpp8cc0007q33jv9uwk775"],
               },
             },
