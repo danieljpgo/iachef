@@ -1,22 +1,49 @@
 import * as React from "react";
 import Head from "next/head";
 import { Inter } from "next/font/google";
+import { GetStaticProps } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [recipe, setRecipe] = React.useState("");
+  const [status, setStatus] = React.useState("");
 
-  const prompt =
-    "Receita usando aveia, frango, tomate, cebola, arroz e cenoura. Listar os Ingredientes e o Modo de Preparo, com menos de 1000 caracteres";
-
-  async function handleSubmit(e: any) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    console.log("entrou");
+    setStatus("Buscando receita");
     setRecipe("");
 
-    const response = await fetch("/api/generate-stream", {
+    console.log("entrou");
+
+    const formData = Object.fromEntries(
+      new FormData(e.currentTarget).entries()
+    );
+    console.log(formData);
+
+    const response = await fetch(
+      "/api/recipe" +
+        "?" +
+        new URLSearchParams({ ingredients: Object.values(formData) })
+    );
+
+    const data = await response.json();
+    console.log(data);
+
+    if (data) {
+      setStatus("Receita já gerada, retornando a você:");
+      setRecipe(data.content);
+      return;
+    }
+
+    setStatus("Receita nova, conversando com ChatGPT:");
+
+    const prompt = `Gerar uma receita utilizando apenas os seguintes ingredientes: ${Object.keys(
+      formData
+    )}. Listar os ingredientes neceessários e o modo de preparo, com menos de 1000 caracteres. Por fim, com uma variação de bom apetite no final.`;
+
+    const chatresponse = await fetch("/api/generate-stream", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,24 +51,25 @@ export default function Home() {
       body: JSON.stringify({ prompt }),
     });
 
-    console.log({ response });
+    console.log({ chatresponse });
     console.log("Edge function returned.");
 
-    if (!response.ok) {
+    if (!chatresponse.ok) {
       throw new Error(response.statusText);
     }
-    // const data = await response.json();
-    // setRecipe(data.choices[0].text);
 
     // This data is a ReadableStream
-    const data = response.body;
-    if (!data) {
+    const chatdata = chatresponse.body;
+    if (!chatdata) {
       return;
     }
 
-    const reader = data.getReader();
+    console.log(chatdata);
+
+    const reader = chatdata.getReader();
     const decoder = new TextDecoder();
     let done = false;
+    let content = "";
 
     while (!done) {
       const { value, done: doneReading } = await reader.read();
@@ -49,9 +77,24 @@ export default function Home() {
       const chunkValue = decoder.decode(value);
 
       console.log(chunkValue);
-
+      content = content + chunkValue;
       setRecipe((prev) => prev + chunkValue);
     }
+    setStatus("Receita nova gerada pelo ChatGPT");
+    console.log({ recipe });
+    console.log({ content });
+    console.log(Object.values(formData));
+
+    const postResponse = await fetch("/api/recipe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ingredients: Object.values(formData),
+        content: content,
+      }),
+    });
   }
 
   return (
@@ -63,22 +106,39 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <button type="button" onClick={handleSubmit}>
-          gerar
-        </button>
+        <form onSubmit={handleSubmit}>
+          <fieldset>
+            <input
+              value="clelpmimw0006q33jp0jv2gwn"
+              type="checkbox"
+              id="rice"
+              name="arroz"
+            />
+            <label htmlFor="scales">Arroz</label>
+            <input
+              value="clelpp8cc0007q33jv9uwk775"
+              type="checkbox"
+              id="tomato"
+              name="tomate"
+            />
+            <label htmlFor="scales">Tomate</label>
+            <input
+              value="clelrjrls0000q32dvuoko4rg"
+              type="checkbox"
+              id="frango"
+              name="frango"
+            />
+            <label htmlFor="scales">Peito de Frango</label>
+          </fieldset>
+          <button type="submit">gerar</button>
+        </form>
 
+        <pre style={{ whiteSpace: "pre-wrap" }}>
+          <p>{status}</p>
+        </pre>
         <pre style={{ whiteSpace: "pre-wrap" }}>
           <p>{recipe}</p>
         </pre>
-        {/* <p>{JSON.stringify(recipe, null, 2)}</p> */}
-        <div>
-          {/* {recipe
-            .substring(recipe.indexOf("1") + 3)
-            .split("2.")
-            .map((step) => (
-              <p key={step}>{step}</p>
-            ))} */}
-        </div>
       </main>
     </>
   );
