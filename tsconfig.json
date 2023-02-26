@@ -17,9 +17,15 @@
     "baseUrl": ".",
     "paths": {
       "~/lib/*": ["./lib/*"],
-      "~/styles/*": ["./src/styles/*"]
+      "~/styles/*": ["./src/styles/*"],
+      "~/components": ["./src/components"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/components/Checkbox.tss"
+  ],
   "exclude": ["node_modules"]
 }

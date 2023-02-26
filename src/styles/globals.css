@@ -1,5 +1,15 @@
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="checkbox"] {
+  -webkit-appearance: none;
+}
+
+#__next {
+  @apply h-full;
 }
