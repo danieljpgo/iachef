@@ -17,6 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "~/lib/*": ["./lib/*"],
+      "~/hooks": ["./src/hooks"],
       "~/styles/*": ["./src/styles/*"],
       "~/components": ["./src/components"]
     }
