@@ -1,3 +1,5 @@
+import { cn } from "~/lib/tailwindcss";
+
 const styles = {
   italic: "italic",
   "not-italic": "not-italic",
@@ -68,12 +70,12 @@ export function Text(props: TextProps) {
 
   return (
     <Tag
-      className={`
-        ${sizes[size]}
-        ${colors[color]}
-        ${weight ? weights[weight] : ""}
-        ${style ? styles[style] : ""}
-      `}
+      className={cn(
+        sizes[size],
+        colors[color],
+        weight ? weights[weight] : "",
+        style ? styles[style] : "",
+      )}
     >
       {children}
     </Tag>

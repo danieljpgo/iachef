@@ -1,3 +1,5 @@
+import { cn } from "~/lib/tailwindcss";
+
 const tags = {
   h1: "h1",
   h2: "h2",
@@ -72,12 +74,12 @@ export function Heading(props: HeadingProps) {
 
   return (
     <Tag
-      className={`
-        ${size ? sizes[size] : defaultSize[tag]}
-        ${weights[weight]}
-        ${colors[color]}
-        ${trackings[tracking]}
-      `}
+      className={cn(
+        size ? sizes[size] : defaultSize[tag],
+        weights[weight],
+        colors[color],
+        trackings[tracking],
+      )}
     >
       {children}
     </Tag>

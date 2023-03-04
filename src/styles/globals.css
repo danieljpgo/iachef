@@ -6,10 +6,6 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-input[type="checkbox"] {
-  -webkit-appearance: none;
-}
-
 #__next {
   @apply h-full;
 }
