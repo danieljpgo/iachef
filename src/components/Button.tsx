@@ -50,11 +50,11 @@ export function Button(props: ButtonProps) {
         "focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50",
         "disabled:cursor-not-allowed disabled:bg-opacity-70",
         variants[variant],
-        sizes[size]
+        sizes[size],
       )}
       onClick={onClick}
     >
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center gap-2">
         <span>{children}</span>
         {loading && <Spinner variant="contrast" />}
       </div>

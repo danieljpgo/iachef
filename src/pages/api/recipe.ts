@@ -4,15 +4,19 @@ import { prisma } from "~/lib/prisma";
 
 const querySchema = z.object({
   ingredients: z.string(),
+  type: z.string(),
+  size: z.string(),
 });
 const bodySchema = z.object({
-  ingredients: z.array(z.string()),
+  size: z.string(),
+  type: z.string(),
   content: z.string(),
+  ingredients: z.array(z.string()),
 });
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   try {
     const { method, body, query } = req;
@@ -23,6 +27,8 @@ export default async function handler(
       const recipes = await prisma.recipe.findMany({
         include: { ingredients: true },
         where: {
+          type: validation.data.type,
+          size: validation.data.size,
           ingredients: {
             every: { id: { in: validation.data.ingredients.split(",") } },
           },
@@ -34,8 +40,8 @@ export default async function handler(
           ?.toString()
           ?.split(",")
           .every((id) =>
-            recipe.ingredients.some((ingredient) => ingredient.id === id)
-          )
+            recipe.ingredients.some((ingredient) => ingredient.id === id),
+          ),
       );
 
       if (selectRecipe) {
@@ -50,6 +56,8 @@ export default async function handler(
       const recipes = await prisma.recipe.create({
         data: {
           content: validation.data.content,
+          size: validation.data.size,
+          type: validation.data.type,
           ingredients: {
             connect: validation.data.ingredients.map((id) => ({ id })),
           },

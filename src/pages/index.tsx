@@ -25,42 +25,45 @@ export default function Home(
 ) {
   const { categories, ingredients } = props;
   const [recipe, setRecipe] = React.useState("");
-  const [statusA, setStatus] = React.useState<
-    "idle" | "loading" | "success-recipe" | "success-new"
-  >("idle");
+  const [type, setType] = React.useState<"idle" | "new" | "book">();
+  const [status, setStatus] = React.useState<"idle" | "loading" | "success">(
+    "idle",
+  );
 
-  const status = useDebounce(statusA, 1000);
+  const statusDelayed = useDebounce(status, 1000);
 
   async function handleSubmit(form: Form) {
-    setStatus("loading");
+    setType("idle");
     setRecipe("");
-
+    setStatus("loading");
     const response = await fetch(
       "/api/recipe" +
         "?" +
-        new URLSearchParams({ ingredients: form.ingredients.toString() }),
+        new URLSearchParams({
+          ingredients: form.ingredients.toString(),
+          size: form.size,
+          type: form.type,
+        }),
     );
 
     const data = await response.json();
-
     if (data) {
-      // setStatus("Receita já gerada, retornando a você:");
-      setStatus("success-recipe");
-      setRecipe(data.content);
-      setStatus("idle");
+      setType("book");
+      // setStatus("success-recipe");
+      setRecipe((prev) => prev + data.content);
+      setStatus("success");
       return;
     }
-
-    // setStatus("Receita nova, conversando com ChatGPT:");
-    setStatus("success-new");
-
+    // setStatus("success-new");
+    setType("new");
     const prompt = `Gerar uma receita tentando utilizar apenas os seguintes ingredientes: ${ingredients
       .filter((a) => form.ingredients.includes(a.id))
       .map(
         (a) => items.find((b) => b.name === a.name)?.label,
-      )}. Listar os ingredientes neceessários e o modo de preparo, com menos de 1000 caracteres. Por fim, com uma variação de bom apetite no final.`;
+      )}. A receita será feita para ${form.size} pessoa(s) e o seu foco será ${
+      form.type === "tasty" ? "ser mais saborosa" : "ser mais saudável"
+    }. Listar os ingredientes neceessários e o modo de preparo, com menos de 1000 caracteres. Por fim, desejar um bom apetite no final.`;
 
-    console.log("test");
     const chatresponse = await fetch("/api/generate", {
       method: "POST",
       headers: {
@@ -94,7 +97,7 @@ export default function Home(
       setRecipe((prev) => prev + chunkValue);
     }
     // setStatus("Receita nova gerada pelo ChatGPT");
-    setStatus("idle");
+    setStatus("success");
 
     const postResponse = await fetch("/api/recipe", {
       method: "POST",
@@ -102,6 +105,8 @@ export default function Home(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        size: form.size,
+        type: form.type,
         ingredients: Object.values(form.ingredients),
         content: content,
       }),
@@ -140,7 +145,7 @@ export default function Home(
               >
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
-              <p>Star on GitHub</p>
+              <p>Estrela no GitHub</p>
             </a>
             <div className="hidden lg:block">
               <Heading as="h1" size="6xl" weight="bold" color="blackout">
@@ -162,21 +167,30 @@ export default function Home(
         <div className="grid gap-8 lg:grid-cols-[0.75fr_min-content_1fr]">
           <section className="grid max-w-md gap-8 justify-self-center lg:max-w-none lg:justify-self-auto">
             <HomeForm
+              status={status}
               categories={categories}
               ingredients={ingredients}
               onSubmit={handleSubmit}
             />
           </section>
           <hr className="h-full w-[1px] bg-gray-200" />
-          <section className="mx-auto grid max-w-md justify-center lg:mx-0 lg:max-w-none lg:justify-start">
-            <pre style={{ whiteSpace: "pre-wrap" }}>
-              <span className="text-6xl">
-                👨‍🍳
-                {status === "loading" && "💭"}
-                {status === "success-recipe" && "📖"}
-                {status === "success-new" && "💬"}
-              </span>
-              <p id="recipe">{recipe}</p>
+          <section className="mx-auto grid w-full max-w-md lg:mx-0 lg:max-w-none">
+            <pre style={{ whiteSpace: "pre-wrap" }} className="w-full">
+              <div className="w-full rounded-xl border p-8">
+                <div className="text-6xl">
+                  👨‍🍳
+                  {(() => {
+                    if (statusDelayed === "loading" && type === "book")
+                      return "📖";
+                    if (statusDelayed === "loading" && type === "new")
+                      return "💬";
+                    if (status === "loading") return "💭";
+                    if (statusDelayed === "loading") return "💭";
+                    return "";
+                  })()}
+                </div>
+                <p id="recipe">{recipe}</p>
+              </div>
             </pre>
           </section>
         </div>
@@ -199,13 +213,14 @@ const schema = z.object({
 type Form = z.infer<typeof schema>;
 
 type HomeFormProps = {
+  status: "idle" | "loading" | "success";
   categories: InferGetStaticPropsType<typeof getStaticProps>["categories"];
   ingredients: InferGetStaticPropsType<typeof getStaticProps>["ingredients"];
   onSubmit: (data: Form) => void;
 };
 
 function HomeForm(props: HomeFormProps) {
-  const { categories, ingredients, onSubmit } = props;
+  const { categories, ingredients, status, onSubmit } = props;
   const [form, setForm] = React.useState<Form>({
     size: recipeSizes[0].value,
     type: recipeTypes[0].value,
@@ -259,6 +274,19 @@ function HomeForm(props: HomeFormProps) {
               ))}
             </Tabs.List>
           </Tabs>
+          <div
+            className={`${
+              form.ingredients.length ? "h-[1.5rem]" : "h-0"
+            } transition-all`}
+          >
+            {items
+              .filter(({ name }) =>
+                form.ingredients.includes(
+                  ingredients?.find((item) => item.name === name)?.id ?? "",
+                ),
+              )
+              .map((a) => a.emoji)}
+          </div>
           <fieldset className="min-h-[130px]">
             <legend className="sr-only">
               {categories.find(({ id }) => id === form.category)?.name}
@@ -287,15 +315,6 @@ function HomeForm(props: HomeFormProps) {
               ))}
             </ul>
           </fieldset>
-          <div>
-            {items
-              .filter(({ name }) =>
-                form.ingredients.includes(
-                  ingredients?.find((item) => item.name === name)?.id ?? "",
-                ),
-              )
-              .map((a) => a.emoji)}
-          </div>
         </li>
         <li className="grid gap-2">
           <div className="flex gap-2">
@@ -340,7 +359,9 @@ function HomeForm(props: HomeFormProps) {
           </Tabs>
         </li>
       </ol>
-      <Button type="submit">gerar</Button>
+      <Button type="submit" loading={status === "loading"}>
+        gerar
+      </Button>
     </form>
   );
 }

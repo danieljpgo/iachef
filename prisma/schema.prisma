@@ -40,6 +40,8 @@ model Recipe {
   id String @id @default(cuid())
 
   ingredients Ingredient[]
+  size        String
+  type        String
   content     String       @db.Text
 
   createdAt DateTime @default(now())
