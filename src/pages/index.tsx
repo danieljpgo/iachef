@@ -33,9 +33,12 @@ export default function Home(
   const typeDelayed = useDebounce(type, 1000);
 
   async function handleSubmit(form: Form) {
+    if (status === "loading") return;
+
     setType("idle");
     setRecipe("");
     setStatus("loading");
+
     const response = await fetch(
       "/api/recipe" +
         "?" +
@@ -370,7 +373,11 @@ function HomeForm(props: HomeFormProps) {
           </Tabs>
         </li>
       </ol>
-      <Button type="submit" loading={status === "loading"}>
+      <Button
+        type="submit"
+        loading={status === "loading"}
+        disabled={status === "loading"}
+      >
         gerar
       </Button>
     </form>
