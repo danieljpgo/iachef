@@ -17,7 +17,7 @@ const recipeSizes = [
 
 const recipeTypes = [
   { value: "healthy", label: "Saudável" },
-  { value: "tasty", label: "Saborsa" },
+  { value: "tasty", label: "Saborosa" },
 ] as const;
 
 export default function Home(
@@ -49,9 +49,17 @@ export default function Home(
     const data = await response.json();
     if (data) {
       setType("book");
-      // setStatus("success-recipe");
-      setRecipe((prev) => prev + data.content);
+      let content = data.content.split("\n");
+      let count = 0;
+
+      while (count < content.length) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        setRecipe((prev) => prev + content[count] + "\n");
+        count++;
+      }
+      console.log(count);
       setStatus("success");
+      setType("idle");
       return;
     }
     // setStatus("success-new");
@@ -61,7 +69,9 @@ export default function Home(
       .map(
         (a) => items.find((b) => b.name === a.name)?.label,
       )}. A receita será feita para ${form.size} pessoa(s) e o seu foco será ${
-      form.type === "tasty" ? "ser mais saborosa" : "ser mais saudável"
+      form.type === "tasty"
+        ? "ser mais saborosa e não necessariamente ser saudável"
+        : "ser mais saudável e não necessariamente ser saborosa"
     }. Listar os ingredientes neceessários e o modo de preparo, com menos de 1000 caracteres. Por fim, desejar um bom apetite no final.`;
 
     const chatresponse = await fetch("/api/generate", {
@@ -91,8 +101,6 @@ export default function Home(
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
-
-      console.log({ doneReading });
       content = content + chunkValue;
       setRecipe((prev) => prev + chunkValue);
     }
@@ -180,12 +188,9 @@ export default function Home(
                 <div className="text-6xl">
                   👨‍🍳
                   {(() => {
-                    if (statusDelayed === "loading" && type === "book")
-                      return "📖";
-                    if (statusDelayed === "loading" && type === "new")
-                      return "💬";
+                    if (type === "book") return "📖";
+                    if (type === "new") return "💬";
                     if (status === "loading") return "💭";
-                    if (statusDelayed === "loading") return "💭";
                     return "";
                   })()}
                 </div>
