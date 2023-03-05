@@ -30,7 +30,7 @@ export default function Home(
     "idle",
   );
 
-  const statusDelayed = useDebounce(status, 1000);
+  const typeDelayed = useDebounce(type, 1000);
 
   async function handleSubmit(form: Form) {
     setType("idle");
@@ -184,17 +184,23 @@ export default function Home(
           <hr className="h-full w-[1px] bg-gray-200" />
           <section className="mx-auto grid w-full max-w-md lg:mx-0 lg:max-w-none">
             <pre style={{ whiteSpace: "pre-wrap" }} className="w-full">
-              <div className="w-full rounded-xl border p-8">
+              <div className="w-full rounded-xl border px-6 py-8 lg:p-8">
                 <div className="text-6xl">
                   👨‍🍳
-                  {(() => {
-                    if (type === "book") return "📖";
-                    if (type === "new") return "💬";
-                    if (status === "loading") return "💭";
-                    return "";
-                  })()}
+                  <span className="align-top text-5xl">
+                    {(() => {
+                      if (type === "book") return "📖";
+                      if (type === "new") return "💬";
+                      if (typeDelayed === "book") return "📖";
+                      if (typeDelayed === "new") return "💬";
+                      if (status === "loading") return "💭";
+                      return "";
+                    })()}
+                  </span>
                 </div>
-                <p id="recipe">{recipe}</p>
+                <p id="recipe" className="text-sm text-gray-600 lg:text-base">
+                  {recipe}
+                </p>
               </div>
             </pre>
           </section>
