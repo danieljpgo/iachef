@@ -130,7 +130,7 @@ export default function Home(
   return (
     <>
       <Head>
-        <title>👨‍🍳 IAChef</title>
+        <title>IAChef</title>
         <meta name="description" content="IA Chef" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
