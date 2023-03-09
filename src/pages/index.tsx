@@ -9,6 +9,13 @@ import { prisma } from "~/lib/prisma";
 import { useDebounce } from "~/hooks";
 import { Button, Checkbox, Heading, Tabs, Text } from "~/components";
 
+const categoriesLabel: Record<string, string> = {
+  vegetable: "Vegetal",
+  animal: "Animal",
+  cereal: "Cereal",
+  fruits: "Frutas",
+};
+
 const recipeSizes = [
   { value: "1", label: "1 Pessoa" },
   { value: "2", label: "2 Pessoa" },
@@ -187,7 +194,7 @@ export default function Home(
           <hr className="h-full w-[1px] bg-gray-200" />
           <section className="mx-auto grid w-full max-w-md lg:mx-0 lg:max-w-none">
             <pre style={{ whiteSpace: "pre-wrap" }} className="w-full">
-              <div className="w-full rounded-xl border px-6 py-8 lg:p-8">
+              <div className="h-full w-full rounded-xl border px-6 py-8 lg:p-8">
                 <div className="text-6xl">
                   👨‍🍳
                   <span className="align-top text-5xl">
@@ -283,7 +290,7 @@ function HomeForm(props: HomeFormProps) {
             <Tabs.List>
               {categories.map((category) => (
                 <Tabs.Trigger key={category.id} value={category.id}>
-                  {category.name}
+                  {categoriesLabel[category.name]}
                 </Tabs.Trigger>
               ))}
             </Tabs.List>
