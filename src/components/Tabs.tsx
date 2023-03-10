@@ -60,7 +60,7 @@ const List = React.forwardRef<
     >
       <div
         ref={selectRef}
-        className="absolute left-0 inline-flex h-8 min-w-[70px] items-center justify-center rounded-[0.185rem] bg-white px-3 py-1.5 text-sm font-medium text-gray-900 shadow-sm transition-all disabled:pointer-events-none"
+        className="absolute left-0 inline-flex h-8 min-w-[78px] items-center justify-center rounded-[0.185rem] bg-white px-3 py-1.5 text-sm font-medium text-gray-900 shadow-sm transition-all disabled:pointer-events-none lg:min-w-[90px]"
       />
       {childrens?.map((child, index) => {
         return React.cloneElement(child, {
@@ -80,7 +80,7 @@ const Trigger = React.forwardRef<
   return (
     <TabsPrimitive.Trigger
       ref={ref}
-      className="relative inline-flex min-w-[70px] items-center justify-center rounded-[0.185rem] px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-gray-900"
+      className="relative inline-flex min-w-[78px] items-center justify-center rounded-[0.185rem] px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors duration-150 focus-visible:outline-orange-500 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-gray-900 lg:min-w-[90px]"
       {...props}
     />
   );

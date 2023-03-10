@@ -3,9 +3,9 @@ import { Spinner } from "~/components";
 import { cn } from "~/lib/tailwindcss";
 
 const variants = {
-  primary: "bg-blue-500 hover:bg-blue-400 focus:border-blue-400",
+  primary: "bg-orange-500 hover:bg-orange-400 focus:border-orange-400",
   secondary:
-    "bg-gray-800 hover:bg-gray-700 focus:border-blue-400 focus:bg-gray-700",
+    "bg-amber-400 hover:bg-amber-300 focus:border-amber-400 focus:bg-amber-300",
 };
 
 const sizes = {
@@ -47,7 +47,7 @@ export function Button(props: ButtonProps) {
       disabled={disabled || loading}
       className={cn(
         "transform rounded-md text-sm font-medium capitalize tracking-wide text-white transition-all duration-200",
-        "focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50",
+        "focus:outline-none focus:ring focus:ring-orange-300 focus:ring-opacity-50",
         "disabled:cursor-not-allowed disabled:bg-opacity-70",
         variants[variant],
         sizes[size],

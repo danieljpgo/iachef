@@ -14,7 +14,7 @@ const colors = {
   contrast: "text-white",
   error: "text-red-400",
   success: "text-green-500",
-  secondary: "text-blue-500",
+  secondary: "text-orange-500",
 } as const;
 
 const sizes = {

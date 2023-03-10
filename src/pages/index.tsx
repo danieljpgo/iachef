@@ -158,7 +158,7 @@ export default function Home(
         <section className="max-w-md justify-self-center lg:max-w-none lg:justify-self-auto">
           <div className="grid gap-8 text-center">
             <a
-              className="flex max-w-fit items-center justify-center space-x-2 justify-self-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 shadow-md transition-colors hover:bg-gray-100"
+              className="flex max-w-fit items-center justify-center space-x-2 justify-self-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 shadow-md transition-colors hover:bg-gray-100 focus-visible:outline-orange-500"
               href="https://github.com/danieljpgo/iachef"
               target="_blank"
               rel="noopener noreferrer"
@@ -268,6 +268,15 @@ function HomeForm(props: HomeFormProps) {
         ? { ...prev, ingredients: [...prev.ingredients, value] }
         : { ...prev, ingredients: prev.ingredients.filter((i) => i !== value) },
     );
+  }
+
+  function handleCleanUp() {
+    setForm({
+      size: recipeSizes[0].value,
+      type: recipeTypes[0].value,
+      category: categories[0].id,
+      ingredients: [],
+    });
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -393,13 +402,20 @@ function HomeForm(props: HomeFormProps) {
           </Tabs>
         </li>
       </ol>
-      <Button
-        type="submit"
-        loading={status === "loading"}
-        disabled={status === "loading"}
-      >
-        gerar
-      </Button>
+      <div className="flex gap-4">
+        <div className="grid w-full">
+          <Button
+            type="submit"
+            loading={status === "loading"}
+            disabled={status === "loading"}
+          >
+            gerar
+          </Button>
+        </div>
+        <Button type="button" variant="secondary" onClick={handleCleanUp}>
+          ✕
+        </Button>
+      </div>
     </form>
   );
 }
