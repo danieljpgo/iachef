@@ -17,6 +17,7 @@ const sizes = {
 type ButtonProps = {
   loading?: boolean;
   children: string;
+  ["aria-label"]?: string;
   size?: keyof typeof sizes;
   variant?: keyof typeof variants;
   disabled?: React.ButtonHTMLAttributes<HTMLButtonElement>["disabled"];
@@ -37,10 +38,12 @@ export function Button(props: ButtonProps) {
     size = "md",
     variant = "primary",
     onClick,
+    "aria-label": ariaLabel,
   } = props;
 
   return (
     <button
+      aria-label={ariaLabel}
       name={name}
       value={value}
       type={type}

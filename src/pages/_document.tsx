@@ -5,7 +5,7 @@ export default function Document() {
     // scroll-smooth
     <Html lang="en" className="h-full antialiased ">
       <Head />
-      <body className="h-full caret-orange-500 accent-orange-500 selection:bg-orange-200 [&>div]:grid [&>div]:content-between [&>div]:gap-4">
+      <body className="h-full caret-orange-500 accent-orange-500 selection:bg-orange-200 [&>div]:grid [&>div]:content-between [&>div]:gap-8">
         <Main />
         <NextScript />
       </body>

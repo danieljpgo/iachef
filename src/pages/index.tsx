@@ -154,7 +154,7 @@ export default function Home(
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="grid gap-16">
+      <div className="grid gap-14 lg:gap-24">
         <section className="max-w-md justify-self-center lg:max-w-none lg:justify-self-auto">
           <div className="grid gap-8 text-center">
             <a
@@ -176,13 +176,17 @@ export default function Home(
             </a>
             <div className="hidden lg:block">
               <Heading as="h1" size="6xl" weight="bold" color="blackout">
-                Gere sua próxima receita em segundos usando ChatGPT
+                <Balancer>
+                  Gere sua próxima receita em segundos usando{" "}
+                  <span className="text-orange-500">ChatGPT</span>
+                </Balancer>
               </Heading>
             </div>
             <div className="lg:hidden">
               <Heading as="h1" size="3xl" weight="bold" color="blackout">
-                <Balancer ratio={0.8}>
-                  Gere sua próxima receita em segundos usando ChatGPT
+                <Balancer>
+                  Gere sua próxima receita em segundos usando{" "}
+                  <span className="text-orange-500">ChatGPT</span>
                 </Balancer>
               </Heading>
             </div>
@@ -200,7 +204,7 @@ export default function Home(
               onSubmit={handleSubmit}
             />
           </section>
-          <hr className="h-full w-[1px] bg-gray-200" />
+          <hr className="mx-auto h-full w-full max-w-md bg-gray-200 lg:w-[1px]" />
           <section className="mx-auto grid w-full max-w-md lg:mx-0 lg:max-w-none">
             <pre style={{ whiteSpace: "pre-wrap" }} className="w-full">
               <div className="h-full w-full rounded-xl border px-6 py-8 lg:p-8">
@@ -292,7 +296,7 @@ function HomeForm(props: HomeFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="grid auto-rows-min gap-6">
-      <ol className="grid gap-4">
+      <ol className="grid gap-4" aria-label="Etapas para criar uma receita">
         <li className="grid gap-2">
           <div className="flex gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 font-semibold text-white">
@@ -332,7 +336,11 @@ function HomeForm(props: HomeFormProps) {
           </div>
           <fieldset className="min-h-[130px]">
             <legend className="sr-only">
-              {categories.find(({ id }) => id === form.category)?.name}
+              {
+                categoriesLabel[
+                  categories.find(({ id }) => id === form.category)?.name ?? ""
+                ]
+              }
             </legend>
             <ul className="grid gap-1">
               {selectedIngredients.map(({ id, name }) => (
@@ -408,11 +416,17 @@ function HomeForm(props: HomeFormProps) {
             type="submit"
             loading={status === "loading"}
             disabled={status === "loading"}
+            aria-label="Gerar receita"
           >
             gerar
           </Button>
         </div>
-        <Button type="button" variant="secondary" onClick={handleCleanUp}>
+        <Button
+          type="button"
+          variant="secondary"
+          aria-label="Limpar campos"
+          onClick={handleCleanUp}
+        >
           ✕
         </Button>
       </div>
