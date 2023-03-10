@@ -2,6 +2,7 @@ import type { Category, Ingredient } from "@prisma/client";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import * as React from "react";
 import Head from "next/head";
+import useSWR from "swr";
 import Balancer from "react-wrap-balancer";
 import { z } from "zod";
 import { items } from "~/lib/ingredients";
@@ -30,6 +31,12 @@ const recipeTypes = [
 export default function Home(
   props: InferGetStaticPropsType<typeof getStaticProps>,
 ) {
+  const query = useSWR<{ count: number }>(
+    "/api/recipe/count",
+    (key) => fetch(key).then((res) => res.json()),
+    { fallback: props.fallback, refreshInterval: 1000 * 60 },
+  );
+
   const { categories, ingredients } = props;
   const [recipe, setRecipe] = React.useState("");
   const [type, setType] = React.useState<"idle" | "new" | "book">();
@@ -129,6 +136,8 @@ export default function Home(
         content: content,
       }),
     });
+    setType("idle");
+    query.mutate({ count: query.data.count + 1 });
   }
 
   React.useEffect(() => {
@@ -178,7 +187,7 @@ export default function Home(
               </Heading>
             </div>
             <Text as="p" color="base">
-              3.000 receitas já geradas.
+              {query.data.count} receitas já geradas.
             </Text>
           </div>
         </section>
@@ -296,8 +305,12 @@ function HomeForm(props: HomeFormProps) {
             </Tabs.List>
           </Tabs>
           <div
-            className={`${
-              form.ingredients.length ? "h-[1.5rem]" : "h-0"
+            className={`max-w-[300px] ${
+              form.ingredients.length > 14
+                ? "h-[3rem]"
+                : form.ingredients.length > 0 && form.ingredients.length <= 14
+                ? "h-[1.5rem]"
+                : "h-0"
             } transition-all`}
           >
             {items
@@ -394,6 +407,7 @@ function HomeForm(props: HomeFormProps) {
 export const getStaticProps: GetStaticProps<{
   categories: Array<Omit<Category, "createdAt" | "updatedAt">>;
   ingredients: Array<Omit<Ingredient, "createdAt" | "updatedAt">>;
+  fallback: { "/api/recipe/count": { count: number } };
 }> = async () => {
   const ingredients = await prisma.ingredient.findMany({
     select: { name: true, id: true, categoryId: true },
@@ -401,20 +415,25 @@ export const getStaticProps: GetStaticProps<{
   const categories = await prisma.category.findMany({
     select: { name: true, id: true },
   });
+  const count = await prisma.recipe.count();
 
-  if (!ingredients) {
-    return {
-      props: {
-        ingredients: [],
-        categories: [],
-      },
-    };
-  }
+  // if (!ingredients) {
+  //   return {
+  //     props: {
+  //       ingredients: [],
+  //       categories: [],
+  //     },
+  //   };
+  // }
 
   return {
     props: {
       categories: categories,
       ingredients: ingredients,
+      fallback: {
+        "/api/recipe/count": { count },
+      },
     },
+    revalidate: 60 * 60 * 24,
   };
 };
