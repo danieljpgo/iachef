@@ -13,7 +13,9 @@ const schema = z.object({
   ingredients: z.array(z.string()),
 });
 
-export const config = { runtime: "edge" };
+export const config = {
+  runtime: "edge",
+};
 
 export default async function handler(req: Request) {
   try {

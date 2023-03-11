@@ -5,7 +5,7 @@ type OGTagsProps = {
   description: string;
 };
 
-export default function OGTags(props: OGTagsProps) {
+export function OGTags(props: OGTagsProps) {
   const { description = "", title = "" } = props;
   const domain = env.NODE_ENV === "development" ? "" : process.env.VERCEL_URL;
 

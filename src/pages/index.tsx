@@ -8,8 +8,7 @@ import { z } from "zod";
 import * as recipes from "~/lib/recipe";
 import { prisma } from "~/lib/prisma";
 import { useDebounce } from "~/hooks";
-import { Button, Checkbox, Heading, Tabs, Text } from "~/components";
-import OGTags from "src/components/OGTags";
+import { Button, Checkbox, Heading, Tabs, Text, OGTags } from "~/components";
 
 export default function Home(
   props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -61,7 +60,6 @@ export default function Home(
         setRecipe((prev) => prev + content[count] + "\n");
         count++;
       }
-      console.log(count);
       setStatus("success");
       setType("idle");
       return;
@@ -113,19 +111,8 @@ export default function Home(
       setRecipe((prev) => prev + chunkValue);
     }
     setStatus("success");
-    query.mutate({ count: query.data.count + 1 });
-    // await fetch("/api/recipe", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     size: form.size,
-    //     type: form.type,
-    //     ingredients: form.ingredients,
-    //     content: content,
-    //   }),
-    // });
-
     setType("idle");
+    query.mutate({ count: query.data.count + 1 });
   }
 
   React.useEffect(() => {
