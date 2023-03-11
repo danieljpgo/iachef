@@ -20,9 +20,14 @@ export default async function handler(
 ) {
   try {
     const { method, body, query } = req;
+
     if (method === "GET") {
       const validation = querySchema.safeParse(query);
-      if (!validation.success) throw new Error("");
+      if (!validation.success) {
+        return res
+          .status(400)
+          .json({ statusCode: 400, message: "Invalid parameters" });
+      }
 
       const recipes = await prisma.recipe.findMany({
         include: { ingredients: true },
@@ -33,8 +38,9 @@ export default async function handler(
             every: { id: { in: validation.data.ingredients.split(",") } },
           },
         },
-      }); // @TODO: melhorar
+      });
 
+      // @TODO: melhorar
       const selectRecipe = recipes.find((recipe) =>
         query?.ingredients
           ?.toString()
@@ -44,14 +50,21 @@ export default async function handler(
           ),
       );
 
-      if (selectRecipe) {
-        return res.status(200).json(selectRecipe);
-      }
-      return res.status(200).json(null);
+      return res.status(200).json(selectRecipe ?? null); // todo melhorar
     }
+
     if (method === "POST") {
       const validation = bodySchema.safeParse(body);
-      if (!validation.success) throw new Error("");
+      if (!validation.success) {
+        return res
+          .status(400)
+          .json({ statusCode: 400, message: "Invalid parameters" });
+      }
+      if (req.headers.authorization !== process.env.AUTHORIZED_REQUEST) {
+        return res
+          .status(401)
+          .json({ statusCode: 401, message: "Unauthorized request" });
+      }
 
       const recipes = await prisma.recipe.create({
         data: {
@@ -63,11 +76,14 @@ export default async function handler(
           },
         },
       });
+
       return res.status(200).json(recipes);
     }
 
-    res.setHeader("Allow", ["GET", "POST"]);
-    return res.status(405).send("Method Not Allowed");
+    return res
+      .setHeader("Allow", ["GET", "POST"])
+      .status(405)
+      .send("Method Not Allowed");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ statusCode: 500, message: error.message });
@@ -75,5 +91,3 @@ export default async function handler(
     return res.status(500).json({ statusCode: 500, message: String(error) });
   }
 }
-
-// @TODO: fix type

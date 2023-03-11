@@ -8,8 +8,7 @@ import { z } from "zod";
 import * as recipes from "~/lib/recipe";
 import { prisma } from "~/lib/prisma";
 import { useDebounce } from "~/hooks";
-import { Button, Checkbox, Heading, Tabs, Text } from "~/components";
-import OGTags from "src/components/OGTags";
+import { Button, Checkbox, Heading, Tabs, Text, OGTags } from "~/components";
 
 export default function Home(
   props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -17,7 +16,11 @@ export default function Home(
   const query = useSWR<{ count: number }>(
     "/api/recipe/count",
     (key) => fetch(key).then((res) => res.json()),
-    { fallback: props.fallback, refreshInterval: 1000 * 60 },
+    {
+      fallback: props.fallback,
+      refreshInterval: 1000 * 60,
+      dedupingInterval: 1000 * 60,
+    },
   );
 
   const { categories, ingredients } = props;
@@ -57,12 +60,10 @@ export default function Home(
         setRecipe((prev) => prev + content[count] + "\n");
         count++;
       }
-      console.log(count);
       setStatus("success");
       setType("idle");
       return;
     }
-    // setStatus("success-new");
     setType("new");
     const prompt = `Gerar uma receita tentando utilizar apenas os seguintes ingredientes: ${ingredients
       .filter((a) => form.ingredients.includes(a.id))
@@ -79,7 +80,12 @@ export default function Home(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({
+        prompt,
+        size: form.size,
+        type: form.type,
+        ingredients: form.ingredients,
+      }),
     });
 
     if (!chatresponse.ok) {
@@ -104,21 +110,7 @@ export default function Home(
       content = content + chunkValue;
       setRecipe((prev) => prev + chunkValue);
     }
-    // setStatus("Receita nova gerada pelo ChatGPT");
     setStatus("success");
-
-    const postResponse = await fetch("/api/recipe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        size: form.size,
-        type: form.type,
-        ingredients: Object.values(form.ingredients),
-        content: content,
-      }),
-    });
     setType("idle");
     query.mutate({ count: query.data.count + 1 });
   }
