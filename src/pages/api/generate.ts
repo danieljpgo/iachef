@@ -17,6 +17,11 @@ export const config = {
 export default async function handler(req: Request) {
   try {
     const validation = schema.safeParse(await req.json());
+
+    if (!process.env.AUTHORIZED_REQUEST) {
+      return new Response("AUTHORIZED_REQUEST not found", { status: 400 });
+    }
+
     if (!validation.success) {
       return new Response("Prompt não informado", { status: 400 });
     }
@@ -45,6 +50,7 @@ export default async function handler(req: Request) {
             const data = event.data;
             if (data === "[DONE]") {
               controller.close();
+              console.log("acabou");
               return;
             }
             try {

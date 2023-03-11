@@ -62,7 +62,6 @@ export default function Home(
       setType("idle");
       return;
     }
-    // setStatus("success-new");
     setType("new");
     const prompt = `Gerar uma receita tentando utilizar apenas os seguintes ingredientes: ${ingredients
       .filter((a) => form.ingredients.includes(a.id))
@@ -104,23 +103,21 @@ export default function Home(
       content = content + chunkValue;
       setRecipe((prev) => prev + chunkValue);
     }
-    // setStatus("Receita nova gerada pelo ChatGPT");
+    alert(form.ingredients); // debug
     setStatus("success");
-
-    const postResponse = await fetch("/api/recipe", {
+    query.mutate({ count: query.data.count + 1 });
+    await fetch("/api/recipe", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         size: form.size,
         type: form.type,
-        ingredients: Object.values(form.ingredients),
+        ingredients: form.ingredients,
         content: content,
       }),
     });
+
     setType("idle");
-    query.mutate({ count: query.data.count + 1 });
   }
 
   React.useEffect(() => {
