@@ -50,36 +50,44 @@ export default async function handler(req: Request) {
       async start(controller) {
         let content = "";
 
-        function streamParser(event: ParsedEvent | ReconnectInterval) {
+        async function streamParser(event: ParsedEvent | ReconnectInterval) {
           if (event.type === "event") {
             const data = event.data;
             if (data === "[DONE]") {
-              controller.close();
-              if (validation.success) {
-                const url = process.env.VERCEL_URL
-                  ? `http://${process.env.VERCEL_URL}/api/recipe`
-                  : "http://localhost:3000/api/recipe";
-                // : "https://iachef-git-feature-env-on-edge-danieljpgo.vercel.app/api/recipe";
-
-                // Authorization: "Bearer " + process.env.AUTHORIZED_REQUEST,
-
-                fetch(url, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    authorization: process.env.AUTHORIZED_REQUEST,
-                    size: validation.data.size,
-                    type: validation.data.type,
-                    ingredients: validation.data.ingredients,
-                    content: content,
-                  }),
-                })
-                  .then(async (a) => console.log(await a.json()))
-                  .catch((error) => console.log(error));
+              if (!validation.success) {
+                return new Response("Prompt não informado", { status: 400 });
               }
 
+              const url = process.env.VERCEL_URL
+                ? `http://${process.env.VERCEL_URL}/api/recipe`
+                : "http://localhost:3000/api/recipe";
+              // : "https://iachef-git-feature-env-on-edge-danieljpgo.vercel.app/api/recipe";
+
+              // Authorization: "Bearer " + process.env.AUTHORIZED_REQUEST,
+
+              const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  authorization: process.env.AUTHORIZED_REQUEST,
+                  size: validation.data.size,
+                  type: validation.data.type,
+                  ingredients: validation.data.ingredients,
+                  content: content,
+                }),
+              }).catch((error) => {
+                return new Response(error, { status: 400 });
+              });
+
+              if (!response.ok) {
+                return new Response(url, { status: 400 });
+              }
+              // .then(async (a) => console.log(await a.json()))
+              // .catch((error) => console.log(error));
+              // }
+              controller.close();
               return;
             }
             try {
