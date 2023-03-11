@@ -52,7 +52,7 @@ export default async function handler(
     }
     if (method === "POST") {
       const validation = bodySchema.safeParse(body);
-      if (!validation.success) throw new Error(""); // TODO melhorar aqui
+      if (!validation.success) throw new Error("body"); // TODO melhorar aqui
 
       if (validation.data.authorization !== process.env.AUTHORIZED_REQUEST) {
         throw new Error("wrong AUTHORIZED_REQUEST"); // TODO melhorar aqui

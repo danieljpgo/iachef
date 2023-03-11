@@ -21,10 +21,6 @@ export default async function handler(req: Request) {
   try {
     const validation = schema.safeParse(await req.json());
 
-    if (!process.env.VERCEL_URL) {
-      return new Response("VERCEL_URL not found", { status: 400 });
-    }
-
     if (!process.env.AUTHORIZED_REQUEST) {
       return new Response("AUTHORIZED_REQUEST not found", { status: 400 });
     }
@@ -59,20 +55,18 @@ export default async function handler(req: Request) {
             const data = event.data;
             if (data === "[DONE]") {
               controller.close();
-              console.log("acabou");
-              console.log({ content });
-
               if (validation.success) {
-                console.log(validation.data);
-                console.log(process.env);
                 const url = process.env.VERCEL_URL
                   ? `http://${process.env.VERCEL_URL}/api/recipe`
                   : "http://localhost:3000/api/recipe";
+                // : "https://iachef-git-feature-env-on-edge-danieljpgo.vercel.app/api/recipe";
+
+                // Authorization: "Bearer " + process.env.AUTHORIZED_REQUEST,
+
                 fetch(url, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
-                    // Authorization: "Bearer " + process.env.AUTHORIZED_REQUEST,
                   },
                   body: JSON.stringify({
                     authorization: process.env.AUTHORIZED_REQUEST,
@@ -81,7 +75,9 @@ export default async function handler(req: Request) {
                     ingredients: validation.data.ingredients,
                     content: content,
                   }),
-                }).then((a) => console.log(a));
+                })
+                  .then(async (a) => console.log(await a.json()))
+                  .catch((error) => console.log(error));
               }
 
               return;

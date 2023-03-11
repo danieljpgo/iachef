@@ -108,7 +108,6 @@ export default function Home(
       content = content + chunkValue;
       setRecipe((prev) => prev + chunkValue);
     }
-    alert(form.ingredients); // debug
     setStatus("success");
     query.mutate({ count: query.data.count + 1 });
     // await fetch("/api/recipe", {
