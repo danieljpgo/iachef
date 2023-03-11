@@ -11,8 +11,10 @@ export default async function handler(
       return res.status(200).json({ count });
     }
 
-    res.setHeader("Allow", ["GET"]);
-    return res.status(405).send("Method Not Allowed");
+    return res
+      .setHeader("Allow", ["GET"])
+      .status(405)
+      .send("Method Not Allowed");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ statusCode: 500, message: error.message });

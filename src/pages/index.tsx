@@ -17,7 +17,11 @@ export default function Home(
   const query = useSWR<{ count: number }>(
     "/api/recipe/count",
     (key) => fetch(key).then((res) => res.json()),
-    { fallback: props.fallback, refreshInterval: 1000 * 60 },
+    {
+      fallback: props.fallback,
+      refreshInterval: 1000 * 60,
+      dedupingInterval: 1000 * 60,
+    },
   );
 
   const { categories, ingredients } = props;
