@@ -5,28 +5,11 @@ import Head from "next/head";
 import useSWR from "swr";
 import Balancer from "react-wrap-balancer";
 import { z } from "zod";
-import { items } from "~/lib/ingredients";
+import * as recipes from "~/lib/recipe";
 import { prisma } from "~/lib/prisma";
 import { useDebounce } from "~/hooks";
 import { Button, Checkbox, Heading, Tabs, Text } from "~/components";
-
-const categoriesLabel: Record<string, string> = {
-  vegetable: "Vegetal",
-  animal: "Animal",
-  cereal: "Cereal",
-  fruits: "Frutas",
-};
-
-const recipeSizes = [
-  { value: "1", label: "1 Pessoa" },
-  { value: "2", label: "2 Pessoa" },
-  { value: "4", label: "4 Pessoa" },
-] as const;
-
-const recipeTypes = [
-  { value: "healthy", label: "Saudável" },
-  { value: "tasty", label: "Saborosa" },
-] as const;
+import OGTags from "src/components/OGTags";
 
 export default function Home(
   props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -84,7 +67,7 @@ export default function Home(
     const prompt = `Gerar uma receita tentando utilizar apenas os seguintes ingredientes: ${ingredients
       .filter((a) => form.ingredients.includes(a.id))
       .map(
-        (a) => items.find((b) => b.name === a.name)?.label,
+        (a) => recipes.ingredients.find((b) => b.name === a.name)?.label,
       )}. A receita será feita para ${form.size} pessoa(s) e o seu foco será ${
       form.type === "tasty"
         ? "ser mais saborosa e não necessariamente ser saudável"
@@ -150,9 +133,16 @@ export default function Home(
     <>
       <Head>
         <title>IAChef</title>
-        <meta name="description" content="IA Chef" />
+        <meta
+          name="description"
+          content="Gere sua próxima receita em segundos usando ChatGPT"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <OGTags
+          title="IAChef 👨‍🍳"
+          description="Gere sua próxima receita em segundos usando ChatGPT"
+        />
       </Head>
       <div className="grid gap-14 lg:gap-24">
         <section className="max-w-md justify-self-center lg:max-w-none lg:justify-self-auto">
@@ -236,11 +226,11 @@ export default function Home(
 const schema = z.object({
   ingredients: z.array(z.string()).min(1),
   category: z.string(),
-  type: z.enum([recipeTypes[0].value, recipeTypes[1].value]),
+  type: z.enum([recipes.types[0].value, recipes.types[1].value]),
   size: z.enum([
-    recipeSizes[0].value,
-    recipeSizes[1].value,
-    recipeSizes[2].value,
+    recipes.sizes[0].value,
+    recipes.sizes[1].value,
+    recipes.sizes[2].value,
   ]),
 });
 
@@ -256,8 +246,8 @@ type HomeFormProps = {
 function HomeForm(props: HomeFormProps) {
   const { categories, ingredients, status, onSubmit } = props;
   const [form, setForm] = React.useState<Form>({
-    size: recipeSizes[0].value,
-    type: recipeTypes[0].value,
+    size: recipes.sizes[0].value,
+    type: recipes.types[0].value,
     category: categories[0].id,
     ingredients: [],
   });
@@ -276,8 +266,8 @@ function HomeForm(props: HomeFormProps) {
 
   function handleCleanUp() {
     setForm({
-      size: recipeSizes[0].value,
-      type: recipeTypes[0].value,
+      size: recipes.sizes[0].value,
+      type: recipes.types[0].value,
       category: categories[0].id,
       ingredients: [],
     });
@@ -306,13 +296,12 @@ function HomeForm(props: HomeFormProps) {
           </div>
           <Tabs
             value={form.category}
-            defaultValue={categories[0].id}
             onValueChange={(value) => handleTabChange("category", value)}
           >
             <Tabs.List>
               {categories.map((category) => (
                 <Tabs.Trigger key={category.id} value={category.id}>
-                  {categoriesLabel[category.name]}
+                  {recipes.categories[category.name]}
                 </Tabs.Trigger>
               ))}
             </Tabs.List>
@@ -326,7 +315,7 @@ function HomeForm(props: HomeFormProps) {
                 : "h-0"
             } transition-all`}
           >
-            {items
+            {recipes.ingredients
               .filter(({ name }) =>
                 form.ingredients.includes(
                   ingredients?.find((item) => item.name === name)?.id ?? "",
@@ -337,7 +326,7 @@ function HomeForm(props: HomeFormProps) {
           <fieldset className="min-h-[130px]">
             <legend className="sr-only">
               {
-                categoriesLabel[
+                recipes.categories[
                   categories.find(({ id }) => id === form.category)?.name ?? ""
                 ]
               }
@@ -353,12 +342,14 @@ function HomeForm(props: HomeFormProps) {
                       handleSelectIngredients(state, id)
                     }
                   />
-                  <label htmlFor={name}>
+                  <label htmlFor={name} className="w-full">
                     <Text as="span">
                       {`${
-                        items.find((item) => item.name === name)?.emoji ?? "?"
+                        recipes.ingredients.find((item) => item.name === name)
+                          ?.emoji ?? "?"
                       } - ${
-                        items.find((item) => item.name === name)?.label ?? name
+                        recipes.ingredients.find((item) => item.name === name)
+                          ?.label ?? name
                       }`}
                     </Text>
                   </label>
@@ -376,11 +367,10 @@ function HomeForm(props: HomeFormProps) {
           </div>
           <Tabs
             value={form.size}
-            defaultValue={recipeSizes[0].value}
             onValueChange={(value) => handleTabChange("size", value)}
           >
             <Tabs.List>
-              {recipeSizes.map((size) => (
+              {recipes.sizes.map((size) => (
                 <Tabs.Trigger key={size.value} value={size.value}>
                   {size.label}
                 </Tabs.Trigger>
@@ -397,11 +387,10 @@ function HomeForm(props: HomeFormProps) {
           </div>
           <Tabs
             value={form.type}
-            defaultValue={recipeTypes[0].value}
             onValueChange={(value) => handleTabChange("type", value)}
           >
             <Tabs.List>
-              {recipeTypes.map((size) => (
+              {recipes.types.map((size) => (
                 <Tabs.Trigger key={size.value} value={size.value}>
                   {size.label}
                 </Tabs.Trigger>
@@ -410,17 +399,15 @@ function HomeForm(props: HomeFormProps) {
           </Tabs>
         </li>
       </ol>
-      <div className="flex gap-4">
-        <div className="grid w-full">
-          <Button
-            type="submit"
-            loading={status === "loading"}
-            disabled={status === "loading"}
-            aria-label="Gerar receita"
-          >
-            gerar
-          </Button>
-        </div>
+      <div className="grid grid-cols-[1fr_auto] gap-4">
+        <Button
+          type="submit"
+          loading={status === "loading"}
+          disabled={status === "loading"}
+          aria-label="Gerar receita"
+        >
+          gerar
+        </Button>
         <Button
           type="button"
           variant="secondary"
@@ -446,15 +433,6 @@ export const getStaticProps: GetStaticProps<{
     select: { name: true, id: true },
   });
   const count = await prisma.recipe.count();
-
-  // if (!ingredients) {
-  //   return {
-  //     props: {
-  //       ingredients: [],
-  //       categories: [],
-  //     },
-  //   };
-  // }
 
   return {
     props: {

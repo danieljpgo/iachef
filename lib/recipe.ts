@@ -1,4 +1,22 @@
-export const items = [
+export const categories: Record<string, string> = {
+  vegetable: "Vegetal",
+  animal: "Animal",
+  cereal: "Cereal",
+  fruits: "Frutas",
+};
+
+export const types = [
+  { value: "healthy", label: "Saudável" },
+  { value: "tasty", label: "Saborosa" },
+] as const;
+
+export const sizes = [
+  { value: "1", label: "1 Pessoa" },
+  { value: "2", label: "2 Pessoa" },
+  { value: "4", label: "4 Pessoa" },
+] as const;
+
+export const ingredients = [
   { name: "rice", emoji: "🍚", label: "Arroz" },
   { name: "tomato", emoji: "🍅", label: "Tomate" },
   { name: "chicken", emoji: "🍗", label: "Frango" },
@@ -58,4 +76,4 @@ export const items = [
   // { name: "avocado", emoji: "🥑", label: "Abacate" },
   // { name: "baguette-bread", emoji: "🥖", label: "Baguete" },
   // { name: "croissant", emoji: "🥐", label: "Croissant" },
-];
+] as const;
