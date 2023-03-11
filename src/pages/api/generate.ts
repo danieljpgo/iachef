@@ -8,6 +8,9 @@ import { env } from "~/lib/env.mjs";
 
 const schema = z.object({
   prompt: z.string(),
+  size: z.string(),
+  type: z.string(),
+  ingredients: z.array(z.string()),
 });
 
 export const config = {
@@ -17,6 +20,10 @@ export const config = {
 export default async function handler(req: Request) {
   try {
     const validation = schema.safeParse(await req.json());
+
+    if (!process.env.VERCEL_URL) {
+      return new Response("VERCEL_URL not found", { status: 400 });
+    }
 
     if (!process.env.AUTHORIZED_REQUEST) {
       return new Response("AUTHORIZED_REQUEST not found", { status: 400 });
@@ -45,18 +52,49 @@ export default async function handler(req: Request) {
     // https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream
     const stream = new ReadableStream({
       async start(controller) {
+        let content = "";
+
         function streamParser(event: ParsedEvent | ReconnectInterval) {
           if (event.type === "event") {
             const data = event.data;
             if (data === "[DONE]") {
               controller.close();
               console.log("acabou");
+              console.log({ content });
+
+              if (validation.success) {
+                console.log(validation.data);
+                console.log(process.env);
+                const url = process.env.VERCEL_URL
+                  ? `http://${process.env.VERCEL_URL}/api/recipe`
+                  : "http://localhost:3000/api/recipe";
+                fetch(url, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    // Authorization: "Bearer " + process.env.AUTHORIZED_REQUEST,
+                  },
+                  body: JSON.stringify({
+                    authorization: process.env.AUTHORIZED_REQUEST,
+                    size: validation.data.size,
+                    type: validation.data.type,
+                    ingredients: validation.data.ingredients,
+                    content: content,
+                  }),
+                }).then((a) => console.log(a));
+              }
+
               return;
             }
             try {
               const json = JSON.parse(data);
               const text = json.choices[0].delta?.content;
               const queue = encoder.encode(text);
+
+              if (text) {
+                content = content + text;
+              }
+
               controller.enqueue(queue);
             } catch (e) {
               controller.error(e);

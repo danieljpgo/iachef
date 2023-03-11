@@ -12,6 +12,7 @@ const bodySchema = z.object({
   type: z.string(),
   content: z.string(),
   ingredients: z.array(z.string()),
+  authorization: z.string(),
 });
 
 export default async function handler(
@@ -51,7 +52,11 @@ export default async function handler(
     }
     if (method === "POST") {
       const validation = bodySchema.safeParse(body);
-      if (!validation.success) throw new Error("");
+      if (!validation.success) throw new Error(""); // TODO melhorar aqui
+
+      if (validation.data.authorization !== process.env.AUTHORIZED_REQUEST) {
+        throw new Error("wrong AUTHORIZED_REQUEST"); // TODO melhorar aqui
+      }
 
       const recipes = await prisma.recipe.create({
         data: {

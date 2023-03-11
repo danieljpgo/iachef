@@ -78,7 +78,12 @@ export default function Home(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({
+        prompt,
+        size: form.size,
+        type: form.type,
+        ingredients: form.ingredients,
+      }),
     });
 
     if (!chatresponse.ok) {
@@ -106,16 +111,16 @@ export default function Home(
     alert(form.ingredients); // debug
     setStatus("success");
     query.mutate({ count: query.data.count + 1 });
-    await fetch("/api/recipe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        size: form.size,
-        type: form.type,
-        ingredients: form.ingredients,
-        content: content,
-      }),
-    });
+    // await fetch("/api/recipe", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     size: form.size,
+    //     type: form.type,
+    //     ingredients: form.ingredients,
+    //     content: content,
+    //   }),
+    // });
 
     setType("idle");
   }
