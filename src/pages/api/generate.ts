@@ -63,12 +63,11 @@ export default async function handler(req: Request) {
                 : "http://localhost:3000/api/recipe";
               // : "https://iachef-git-feature-env-on-edge-danieljpgo.vercel.app/api/recipe";
 
-              // Authorization: "Bearer " + process.env.AUTHORIZED_REQUEST,
-
               const response = await fetch(url, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: String(process.env.AUTHORIZED_REQUEST),
                 },
                 body: JSON.stringify({
                   authorization: process.env.AUTHORIZED_REQUEST,
