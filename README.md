@@ -1,38 +1,119 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center">
+    <img
+      alt="Chef"
+      title="Chef"
+      src=".github/chef.webp"
+      width="100px" />
+</div>
+
+<h1 align="left">IAChef</h1>
+
+<p align="left">
+   <a href="https://github.com/danieljpgo">
+      <img
+        alt="author"
+        src="https://img.shields.io/badge/author-danieljpgo-f97316?labelColor=ffffff"
+      />
+   </a>
+   <img
+      alt="languages"
+      src="https://img.shields.io/github/languages/count/danieljpgo/iachef?color=ffffff&color=f97316"
+   />
+   <a href="https://github.com/danieljpgo/iachef/graphs/contributors">
+      <img
+        alt="contributors"
+        src="https://img.shields.io/github/stars/danieljpgo/iachef?color=ffffff&color=f97316"/>
+   </a>
+    <a href="https://github.com/danieljpgo/iachef/network/members">
+      <img
+         alt="forks"
+         src="https://img.shields.io/github/forks/danieljpgo/iachef?color=ffffff&color=f97316"/>
+   </a>
+   <img alt="license" src="https://img.shields.io/badge/license-MIT-f97316?labelColor=ffffff">
+</p>
+
+> Your personal chef power by ChatGPT 👨‍🍳
+
+&nbsp;
+
+<p align="center">
+   <a href="#project">Project</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#goals">Goals</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#features">Features</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#technologies">Technologies</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#getting-started">Getting Started</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#contributing">Contributing</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#license">License</a>
+</p>
+
+<!-- <div align="center">
+   <img
+      alt="another todo list"
+      title="another todo list"
+      src=".github/anim.gif"
+      width="640px" />
+</div> -->
+
+## Project
+
+@TODO
+
+## Goals
+
+@TODO
+
+## Features
+
+@TODO
+
+## Technologies
+
+The main technologies used to develop the project were:
+
+- [React](https://reactjs.org/)
+- [Next](https://nextjs.org/)
+- [OpenAI](https://platform.openai.com/docs/introduction)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind](https://tailwindcss.com/)
+- [Prisma](https://www.prisma.io/)
+- [Zod](https://zod.dev/)
+- [SWR](https://swr.vercel.app/)
+
+This project was bootstrapped with:
+
+- [create-next-app](https://nextjs.org/docs/api-reference/create-next-app)
 
 ## Getting Started
 
-First, run the development server:
+First of all, you may clone this project:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+```
+git clone https://github.com/danieljpgo/iachef.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+@TODO
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+<!-- After cloning the repo, go to [OpenAI](https://platform.openai.com/account/api-keys) to make an account and put your API key in a file called .env.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Run the following scripts in order to execute the application:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+// install dependencies
+yarn install
 
-## Learn More
+// start the application
+yarn start
+``` -->
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Check out the [contributing page](https://github.com/danieljpgo/iachef/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
+This project is under the [MIT license](https://github.com/danieljpgo/iachef/blob/master/LICENSE).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<div>Released in 2023.</div>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Make with ❤️ by [Daniel Jorge](https://github.com/danieljpgo)

@@ -128,7 +128,7 @@ export default function Home(
         <title>IAChef</title>
         <meta
           name="description"
-          content="Gere sua próxima receita em segundos usando ChatGPT"
+          content="O seu chef pessoal power by ChatGPT"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
