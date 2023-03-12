@@ -8,7 +8,11 @@ import { env } from "~/lib/env.mjs";
 import { ratelimit } from "~/lib/ratelimit";
 
 const schema = z.object({
-  prompt: z.string(),
+  prompt: z
+    .string()
+    .startsWith(
+      "Gerar uma receita tentando utilizar apenas os seguintes ingredientes:",
+    ),
   size: z.string(),
   type: z.string(),
   ingredients: z.array(z.string()),
