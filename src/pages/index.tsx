@@ -136,7 +136,7 @@ export default function Home(
         <link rel="icon" href="/favicon.ico" />
         <OGTags
           title="IAChef 👨‍🍳"
-          description="Gere sua próxima receita em segundos usando ChatGPT"
+          description="O seu chef pessoal power by ChatGPT"
         />
       </Head>
       <div className="grid gap-14 lg:gap-24">
