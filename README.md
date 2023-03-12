@@ -1,4 +1,4 @@
-<div align="center">
+<div align="left">
     <img
       alt="Chef"
       title="Chef"
@@ -46,19 +46,26 @@
    <a href="#license">License</a>
 </p>
 
-<!-- <div align="center">
+<div align="center">
    <img
       alt="another todo list"
       title="another todo list"
-      src=".github/anim.gif"
-      width="640px" />
-</div> -->
+      src="/public/og.png"
+      width="740px" />
+</div>
 
 ## Project
 
-@TODO
+Using OpenIA's `gpt-3.5-turbo` model to generate recipe from a combination of items such as:
+
+- Ingredients
+- Amount of people (1,2 & 4)
+- Type of recipe (healthy, tasty)
 
 ## Goals
+
+- Learn how to use the Open AI model `gpt-3.5-turbo` in a real project.
+- Using Edge Functions streaming data.
 
 @TODO
 

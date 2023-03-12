@@ -10,6 +10,7 @@ import { prisma } from "~/lib/prisma";
 import { generatePrompt } from "~/lib/prompt";
 import { useDebounce } from "~/hooks";
 import { Button, Checkbox, Heading, Tabs, Text, OGTags } from "~/components";
+import { cn } from "~/lib/tailwindcss";
 
 export default function Home(
   props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -20,7 +21,6 @@ export default function Home(
   const [status, setStatus] = React.useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
-  const typeDelayed = useDebounce(type, 1000);
   const query = useSWR<{ count: number }>(
     "/api/recipe/count",
     (key) => fetch(key).then((res) => res.json()),
@@ -30,6 +30,8 @@ export default function Home(
       dedupingInterval: 1000 * 60,
     },
   );
+  const typeDelayed = useDebounce(type, 1000);
+  const amountDelayed = useDebounce(query.data.count, 3000);
 
   async function handleSubmit(form: Form) {
     if (status === "loading") return;
@@ -141,7 +143,7 @@ export default function Home(
         <section className="max-w-md justify-self-center lg:max-w-none lg:justify-self-auto">
           <div className="grid gap-8 text-center">
             <a
-              className="flex max-w-fit items-center justify-center space-x-2 justify-self-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 shadow-md transition-colors hover:bg-gray-100 focus-visible:outline-orange-500"
+              className="flex max-w-fit items-center justify-center space-x-2 justify-self-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 shadow-md transition-colors hover:bg-gray-100 focus-visible:outline-orange-500"
               href="https://github.com/danieljpgo/iachef"
               target="_blank"
               rel="noopener noreferrer"
@@ -173,9 +175,19 @@ export default function Home(
                 </Balancer>
               </Heading>
             </div>
-            <Text as="p" color="base">
-              {query.data.count} receitas já geradas.
-            </Text>
+            <div className="flex w-max justify-self-center">
+              <Text as="p" color="base">
+                {query.data.count} receitas já geradas.
+              </Text>
+              <div
+                className={cn(
+                  "relative h-2 w-2 rounded-full bg-orange-500 transition-opacity",
+                  amountDelayed !== query.data.count ? "" : "opacity-0",
+                )}
+              >
+                <span className="absolute -ml-1 h-2 w-2 animate-ping rounded-full bg-orange-500 opacity-50" />
+              </div>
+            </div>
           </div>
         </section>
         <div className="grid gap-8 lg:grid-cols-[0.75fr_min-content_1fr]">
