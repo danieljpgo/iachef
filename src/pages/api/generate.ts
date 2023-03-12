@@ -5,6 +5,7 @@ import {
   ReconnectInterval,
 } from "eventsource-parser";
 import { env } from "~/lib/env.mjs";
+import { ratelimit } from "~/lib/ratelimit";
 
 const schema = z.object({
   prompt: z.string(),
@@ -19,6 +20,13 @@ export const config = {
 
 export default async function handler(req: Request) {
   try {
+    const limit = await ratelimit.limit(
+      "ip" in req ? String(req.ip) : "unknown",
+    );
+    if (!limit.success) {
+      return new Response("Exceeded the ratelimit", { status: 429 });
+    }
+
     const validation = schema.safeParse(await req.json());
     if (!validation.success) {
       return new Response("Invalid parameters", { status: 400 });
