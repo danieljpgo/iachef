@@ -7,11 +7,8 @@ type OGTagsProps = {
 
 export function OGTags(props: OGTagsProps) {
   const { description = "", title = "" } = props;
-  const domain = env.NODE_ENV === "development" ? "" : process.env.VERCEL_URL;
-
-  const url =
-    env.NODE_ENV === "production" ? `https://${process.env.VERCEL_URL}` : "";
-
+  const domain = env.NODE_ENV === "production" ? "iachef.danieljorge.me" : "";
+  const url = env.NODE_ENV === "production" ? `https://${domain}` : "";
   const image = `${url}/og.png`;
 
   return (
