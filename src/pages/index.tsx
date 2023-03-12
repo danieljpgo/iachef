@@ -7,12 +7,20 @@ import Balancer from "react-wrap-balancer";
 import { z } from "zod";
 import * as recipes from "~/lib/recipe";
 import { prisma } from "~/lib/prisma";
+import { generatePrompt } from "~/lib/prompt";
 import { useDebounce } from "~/hooks";
 import { Button, Checkbox, Heading, Tabs, Text, OGTags } from "~/components";
 
 export default function Home(
   props: InferGetStaticPropsType<typeof getStaticProps>,
 ) {
+  const { categories, ingredients } = props;
+  const [recipe, setRecipe] = React.useState("");
+  const [type, setType] = React.useState<"idle" | "new" | "book">("idle");
+  const [status, setStatus] = React.useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const typeDelayed = useDebounce(type, 1000);
   const query = useSWR<{ count: number }>(
     "/api/recipe/count",
     (key) => fetch(key).then((res) => res.json()),
@@ -23,25 +31,15 @@ export default function Home(
     },
   );
 
-  const { categories, ingredients } = props;
-  const [recipe, setRecipe] = React.useState("");
-  const [type, setType] = React.useState<"idle" | "new" | "book">();
-  const [status, setStatus] = React.useState<"idle" | "loading" | "success">(
-    "idle",
-  );
-
-  const typeDelayed = useDebounce(type, 1000);
-
   async function handleSubmit(form: Form) {
     if (status === "loading") return;
 
-    setType("idle");
     setRecipe("");
+    setType("idle");
     setStatus("loading");
 
-    const response = await fetch(
-      "/api/recipe" +
-        "?" +
+    const recipeResponse = await fetch(
+      "/api/recipe?" +
         new URLSearchParams({
           ingredients: form.ingredients.toString(),
           size: form.size,
@@ -49,37 +47,37 @@ export default function Home(
         }),
     );
 
-    const data = await response.json();
-    if (data) {
+    const recipeData = await recipeResponse.json();
+    if (recipeData) {
       setType("book");
-      let content = data.content.split("\n");
+      const content = recipeData.content.split("\n");
       let count = 0;
-
       while (count < content.length) {
         await new Promise((resolve) => setTimeout(resolve, 100));
         setRecipe((prev) => prev + content[count] + "\n");
         count++;
       }
+
       setStatus("success");
       setType("idle");
       return;
     }
-    setType("new");
-    const prompt = `Gerar uma receita tentando utilizar apenas os seguintes ingredientes: ${ingredients
-      .filter((a) => form.ingredients.includes(a.id))
-      .map(
-        (a) => recipes.ingredients.find((b) => b.name === a.name)?.label,
-      )}. A receita será feita para ${form.size} pessoa(s) e o seu foco será ${
-      form.type === "tasty"
-        ? "ser mais saborosa e não necessariamente ser saudável"
-        : "ser mais saudável e não necessariamente ser saborosa"
-    }. Listar os ingredientes neceessários e o modo de preparo, com menos de 1000 caracteres. Por fim, desejar um bom apetite no final.`;
 
-    const chatresponse = await fetch("/api/generate", {
+    setType("new");
+    const prompt = generatePrompt(
+      ingredients
+        .filter(({ id }) => form.ingredients.includes(id))
+        .map(
+          ({ name }) =>
+            recipes.ingredients.find((b) => b.name === name)?.label ?? "",
+        ),
+      form.type,
+      form.size,
+    );
+
+    const openIAResponse = await fetch("/api/generate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         prompt,
         size: form.size,
@@ -87,19 +85,22 @@ export default function Home(
         ingredients: form.ingredients,
       }),
     });
-
-    if (!chatresponse.ok) {
-      throw new Error(response.statusText);
+    if (openIAResponse.status === 429) {
+      setRecipe("\nNúmero de receitas excedidos, espere alguns minutos.");
+      setType("idle");
+      setStatus("error");
+      return;
     }
-
-    // This data is a ReadableStream
-    const chatdata = chatresponse.body;
-    if (!chatdata) {
+    if (!openIAResponse.ok || !openIAResponse.body) {
+      setRecipe("\nAlgo de errado aconteceu, tente novamente.");
+      setType("idle");
+      setStatus("error");
       return;
     }
 
-    const reader = chatdata.getReader();
+    const reader = openIAResponse.body.getReader();
     const decoder = new TextDecoder();
+
     let done = false;
     let content = "";
 
@@ -110,8 +111,8 @@ export default function Home(
       content = content + chunkValue;
       setRecipe((prev) => prev + chunkValue);
     }
-    setStatus("success");
     setType("idle");
+    setStatus("success");
     query.mutate({ count: query.data.count + 1 });
   }
 
@@ -199,6 +200,7 @@ export default function Home(
                       if (typeDelayed === "book") return "📖";
                       if (typeDelayed === "new") return "💬";
                       if (status === "loading") return "💭";
+                      if (status === "error") return "🚧";
                       return "";
                     })()}
                   </span>
@@ -229,7 +231,7 @@ const schema = z.object({
 type Form = z.infer<typeof schema>;
 
 type HomeFormProps = {
-  status: "idle" | "loading" | "success";
+  status: "idle" | "loading" | "success" | "error";
   categories: InferGetStaticPropsType<typeof getStaticProps>["categories"];
   ingredients: InferGetStaticPropsType<typeof getStaticProps>["ingredients"];
   onSubmit: (data: Form) => void;
@@ -298,15 +300,7 @@ function HomeForm(props: HomeFormProps) {
               ))}
             </Tabs.List>
           </Tabs>
-          <div
-            className={`max-w-[300px] ${
-              form.ingredients.length > 14
-                ? "h-[3rem]"
-                : form.ingredients.length > 0 && form.ingredients.length <= 14
-                ? "h-[1.5rem]"
-                : "h-0"
-            } transition-all`}
-          >
+          <div className="max-w-[300px]">
             {recipes.ingredients
               .filter(({ name }) =>
                 form.ingredients.includes(
