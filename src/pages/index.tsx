@@ -177,7 +177,7 @@ export default function Home(
             </div>
             <div className="flex w-max justify-self-center">
               <Text as="p" color="base">
-                {query.data.count} receitas já geradas.
+                {query.data.count} receitas únicas geradas.
               </Text>
               <div
                 className={cn(
