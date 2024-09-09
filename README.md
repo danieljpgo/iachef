@@ -3,7 +3,7 @@
       alt="Chef"
       title="Chef"
       src=".github/chef.webp"
-      width="100px" />
+      width="64px" />
 </div>
 
 <h1 align="left">IAChef</h1>
@@ -49,8 +49,8 @@
    <img
       alt="another todo list"
       title="another todo list"
-      src="/public/og.png"
-      width="740px" />
+      src=".github/banner.png"
+      width="600px" />
 </div>
 
 ## Project
@@ -59,7 +59,7 @@ Using OpenIA's `gpt-3.5-turbo` model to generate recipe from a combination of it
 
 - Ingredients
 - Amount of people (1,2 & 4)
-- Type of recipe (healthy, tasty)
+- Type of recipe (healthy or tasty)
 
 ## Goals
 
@@ -80,11 +80,11 @@ A demonstration of the features.
 
 ## Features
 
-- Generate recipes from a set of ingredients.
-- Customized recipes based on the number of people and the type ("healthy" or "tasty").
-- Save the recipe to retrieve the same recipe that was previously generated from the same selection set.
+- Generate recipes from selected ingredients.
+- Customize recipes by number of people and type (healthy or tasty).
+- Save and retrieve previously generated recipes.
 - Stream data for quick visualization.
-- Total number of recipes generated, updated periodically.
+- View total recipes generated, updated periodically.
 
 ## Technologies
 
