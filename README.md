@@ -39,10 +39,9 @@
 <p align="center">
    <a href="#project">Project</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
    <a href="#goals">Goals</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#demo">Demo</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
    <a href="#features">Features</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
    <a href="#technologies">Technologies</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-   <a href="#getting-started">Getting Started</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-   <a href="#contributing">Contributing</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
    <a href="#license">License</a>
 </p>
 
@@ -67,11 +66,25 @@ Using OpenIA's `gpt-3.5-turbo` model to generate recipe from a combination of it
 - Learn how to use the Open AI model `gpt-3.5-turbo` in a real project.
 - Using Edge Functions streaming data.
 
-@TODO
+## Demo
+
+A demonstration of the features.
+
+<div align="center">
+    <img
+      alt="next.js"
+      title="next.js"
+      src=".github/demo.gif"
+      width="600px" />
+</div>
 
 ## Features
 
-@TODO
+- Generate recipes from a set of ingredients.
+- Customized recipes based on the number of people and the type ("healthy" or "tasty").
+- Save the recipe to retrieve the same recipe that was previously generated from the same selection set.
+- Stream data for quick visualization.
+- Total number of recipes generated, updated periodically.
 
 ## Technologies
 
@@ -90,37 +103,10 @@ This project was bootstrapped with:
 
 - [create-next-app](https://nextjs.org/docs/api-reference/create-next-app)
 
-## Getting Started
-
-First of all, you may clone this project:
-
-```
-git clone https://github.com/danieljpgo/iachef.git
-```
-
-@TODO
-
-<!-- After cloning the repo, go to [OpenAI](https://platform.openai.com/account/api-keys) to make an account and put your API key in a file called .env.
-
-
-Run the following scripts in order to execute the application:
-
-```
-// install dependencies
-yarn install
-
-// start the application
-yarn start
-``` -->
-
-## Contributing
-
-Check out the [contributing page](https://github.com/danieljpgo/iachef/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
-
 ## License
 
 This project is under the [MIT license](https://github.com/danieljpgo/iachef/blob/master/LICENSE).
 
 <div>Released in 2023.</div>
 
-Make with ❤️ by [Daniel Jorge](https://github.com/danieljpgo)
+Make by [Daniel Jorge](https://github.com/danieljpgo)
